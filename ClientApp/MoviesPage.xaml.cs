@@ -202,7 +202,7 @@ namespace ClientApp
             var movie = border.DataContext as MovieInfo;
             if (movie == null) return;
 
-            NavigationService.Navigate(new MovieDetailPage(movie));
+            NavigationService.Navigate(new MovieInfoPage(movie));
         }
 
         // ===== Menu user =====
