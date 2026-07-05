@@ -1,0 +1,175 @@
+﻿<Window x:Class="ServerApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MINHFLIX — Server Console" Height="600" Width="900"
+        Background="#0f0f0f" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60"/>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="40"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Grid Grid.Row="0" Background="#1a1a1a">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="20,0">
+                <TextBlock Text="MINHFLIX" Foreground="#E50914" 
+                           FontSize="22" FontWeight="Bold" VerticalAlignment="Center"/>
+                <TextBlock Text=" — Server Console" Foreground="#888" 
+                           FontSize="16" VerticalAlignment="Center"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" 
+                        VerticalAlignment="Center" Margin="0,0,20,0">
+                <Ellipse x:Name="statusDot" Width="10" Height="10" 
+                         Fill="#555" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                <TextBlock x:Name="txtStatus" Text="Offline" 
+                           Foreground="#888" FontSize="13" VerticalAlignment="Center"/>
+            </StackPanel>
+        </Grid>
+
+        <!-- Toolbar -->
+        <Grid Grid.Row="1" Background="#141414">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="15,0">
+                <Button x:Name="btnStart" Content="▶  Khởi động Server"
+                        Click="btnStart_Click"
+                        Background="#E50914" Foreground="White"
+                        BorderThickness="0" Padding="20,8"
+                        FontSize="13" FontWeight="Bold" Cursor="Hand">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="#E50914"/>
+                            <Setter Property="Foreground" Value="White"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                            <Setter Property="Padding" Value="20,8"/>
+                            <Setter Property="FontSize" Value="13"/>
+                            <Setter Property="FontWeight" Value="Bold"/>
+                            <Setter Property="Cursor" Value="Hand"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}" 
+                                                CornerRadius="4" Padding="{TemplateBinding Padding}">
+                                            <ContentPresenter HorizontalAlignment="Center" 
+                                                              VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter Property="Background" Value="#555"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+                <Button x:Name="btnClear" Content="🗑  Xóa Log"
+                        Click="btnClear_Click" Margin="10,0,0,0"
+                        Background="#2a2a2a" Foreground="#aaa"
+                        BorderThickness="0" Padding="15,8"
+                        FontSize="13" Cursor="Hand">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="#2a2a2a"/>
+                            <Setter Property="Foreground" Value="#aaa"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                            <Setter Property="Padding" Value="15,8"/>
+                            <Setter Property="Cursor" Value="Hand"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}" 
+                                                CornerRadius="4" Padding="{TemplateBinding Padding}">
+                                            <ContentPresenter HorizontalAlignment="Center" 
+                                                              VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+                <!-- Stats -->
+                <Border Background="#1f1f1f" CornerRadius="4" Padding="15,6" Margin="20,0,0,0">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="TCP " Foreground="#888" FontSize="12"/>
+                        <TextBlock Text="8888" Foreground="#E50914" FontSize="12" FontWeight="Bold"/>
+                        <TextBlock Text="   UDP " Foreground="#888" FontSize="12"/>
+                        <TextBlock Text="8889" Foreground="#E50914" FontSize="12" FontWeight="Bold"/>
+                    </StackPanel>
+                </Border>
+                <Button x:Name="btnReports" Content="⚠  Báo cáo"
+                        Click="btnReports_Click" Margin="10,0,0,0"
+                        Background="#b71c1c" Foreground="White"
+                        BorderThickness="0" Padding="15,8"
+                        FontSize="13" Cursor="Hand">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="#b71c1c"/>
+                            <Setter Property="Foreground" Value="White"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                            <Setter Property="Padding" Value="15,8"/>
+                            <Setter Property="Cursor" Value="Hand"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}"
+                                                CornerRadius="4" Padding="{TemplateBinding Padding}">
+                                            <ContentPresenter HorizontalAlignment="Center"
+                                                              VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+                <Border x:Name="clientCountBox" Background="#1f1f1f" CornerRadius="4" 
+                        Padding="15,6" Margin="10,0,0,0">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Clients: " Foreground="#888" FontSize="12"/>
+                        <TextBlock x:Name="txtClientCount" Text="0" 
+                                   Foreground="#4CAF50" FontSize="12" FontWeight="Bold"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Grid>
+
+        <!-- Log area + Reports panel -->
+        <Grid Grid.Row="2" Background="#0a0a0a" Margin="0,1,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition x:Name="reportColumn" Width="0"/>
+            </Grid.ColumnDefinitions>
+            <ListBox x:Name="lstLog" Background="Transparent" BorderThickness="0"
+                     Foreground="#ddd" FontFamily="Consolas" FontSize="12"
+                     Padding="10" ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                     VirtualizingPanel.ScrollUnit="Pixel">
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="Padding" Value="5,3"/>
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                        <Setter Property="Foreground" Value="#ccc"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="#1f1f1f"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+            </ListBox>
+        </Grid>
+
+        <!-- Status bar -->
+        <Grid Grid.Row="3" Background="#1a1a1a">
+            <TextBlock x:Name="txtTime" Foreground="#555" FontSize="11"
+                       VerticalAlignment="Center" Margin="15,0"
+                       FontFamily="Consolas"/>
+        </Grid>
+    </Grid>
+</Window>

@@ -1,0 +1,44 @@
+# Build output
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.slnLaunch.user
+
+# NuGet
+packages/
+*.nupkg
+
+# Database files
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+
+# Video files 
+*.mp4
+*.mkv
+*.avi
+*.mov
+videos/
+
+# Logs
+*.log
+
+# OS files
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Rider
+.idea/
+
+# VS Code
+.vscode/

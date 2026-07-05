@@ -1,0 +1,66 @@
+﻿<Page x:Class="ClientApp.HistoryPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Background="#141414">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Grid Grid.Row="0" Background="#1a1a1a">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="20,0">
+                <Button Content="← Quay lại" Click="btnBack_Click"
+                        Background="Transparent" Foreground="#E50914"
+                        BorderThickness="0" FontSize="14" Cursor="Hand"/>
+                <TextBlock Text="Lịch sử xem phim" Foreground="White"
+                           FontSize="20" FontWeight="Bold"
+                           VerticalAlignment="Center" Margin="20,0,0,0"/>
+            </StackPanel>
+        </Grid>
+
+        <!-- Danh sách lịch sử -->
+        <ScrollViewer Grid.Row="1" Margin="20">
+            <ItemsControl x:Name="icHistory">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Background="#1f1f1f" CornerRadius="8"
+                                Margin="0,0,0,12" Cursor="Hand"
+                                MouseLeftButtonUp="Movie_Click">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="120"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Poster -->
+                                <Image Grid.Column="0" Height="75"
+                                       Source="{Binding Poster}"
+                                       Stretch="UniformToFill">
+                                    <Image.Clip>
+                                        <RectangleGeometry Rect="0,0,120,75" RadiusX="8" RadiusY="8"/>
+                                    </Image.Clip>
+                                </Image>
+
+                                <!-- Tên phim + thể loại -->
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="15,0">
+                                    <TextBlock Text="{Binding Title}" Foreground="White"
+                                               FontSize="16" FontWeight="SemiBold"/>
+                                    <TextBlock Text="{Binding Category}" Foreground="#E50914"
+                                               FontSize="13" Margin="0,4,0,0"/>
+                                </StackPanel>
+
+                                <!-- Giờ xem -->
+                                <TextBlock Grid.Column="2" Text="{Binding WatchedAt}"
+                                           Foreground="#888" FontSize="13"
+                                           VerticalAlignment="Center" Margin="0,0,20,0"/>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </Grid>
+</Page>
