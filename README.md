@@ -80,3 +80,17 @@
 
 \- Tách trang thông tin phim và trang xem phim
 
+\## Cập nhật ngày 12/7/2026
+
+
+
+\- Chuyển database từ SQLite sang PostgreSQL trên Azure Cloud
+
+\- Server chạy tại region Indonesia Central, phiên bản PostgreSQL 17.10
+
+\- Đã tạo 5 bảng: Users, Movies, Comments, History, Reports
+
+\- Kết nối test thành công qua DBeaver
+
+\- SQL schema lưu trong thư mục database/schema.sql
+
