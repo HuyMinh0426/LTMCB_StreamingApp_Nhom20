@@ -101,12 +101,13 @@ namespace ServerApp
 
             // Data 60 phim đã được migrate sang PostgreSQL từ trước
             // Vẫn giữ InsertSampleData để phòng khi deploy trên server mới chưa có data
-            //InsertSampleData(conn); bật sau để commit không lỗi
+            InsertSampleData(conn); 
         }
 
-        private void InsertSampleData(SqliteConnection conn)
+        private void InsertSampleData(NpgsqlConnection conn)
         {
-            using var checkCmd = new SqliteCommand("SELECT COUNT(*) FROM Movies", conn);
+            // Kiểm tra bảng Movies đã có data chưa, nếu có rồi thì skip
+            using var checkCmd = new NpgsqlCommand("SELECT COUNT(*) FROM \"Movies\"", conn);
             long count = (long)checkCmd.ExecuteScalar();
             if (count > 0) return;
 
@@ -176,10 +177,11 @@ namespace ServerApp
 
             foreach (var m in movies)
             {
+                // Bọc tên bảng và cột trong "..." vì PostgreSQL case-sensitive
                 string insertSql = @"
-                    INSERT INTO Movies (Title, FilePath, Category, Poster, Description, Duration) 
+                    INSERT INTO ""Movies"" (""Title"", ""FilePath"", ""Category"", ""Poster"", ""Description"", ""Duration"") 
                     VALUES (@title, @path, @category, @poster, @desc, @duration)";
-                using var insertCmd = new SqliteCommand(insertSql, conn);
+                using var insertCmd = new NpgsqlCommand(insertSql, conn);
                 insertCmd.Parameters.AddWithValue("@title", m.Title);
                 insertCmd.Parameters.AddWithValue("@path", "videos/bunny.mp4");
                 insertCmd.Parameters.AddWithValue("@category", m.Category);
