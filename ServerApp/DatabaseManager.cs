@@ -396,7 +396,7 @@ namespace ServerApp
         public List<(int id, string reporter, string reported, string movieTitle, string commentContent, string reason, string reportedAt)> GetReportsWithId()
         {
             var list = new List<(int, string, string, string, string, string, string)>();
-            using var conn = new SqliteConnection($"Data Source={_dbPath}");
+            using var conn = new SqliteConnection(  $"Data Source={_dbPath}");
             conn.Open();
             string sql = "SELECT Id, Reporter, Reported, MovieTitle, CommentContent, Reason, ReportedAt FROM Reports ORDER BY Id DESC";
             using var cmd = new SqliteCommand(sql, conn);
