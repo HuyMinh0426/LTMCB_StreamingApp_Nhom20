@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.Sqlite;
+﻿using Npgsql;
+using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
 
@@ -6,6 +7,18 @@ namespace ServerApp
 {
     public class DatabaseManager
     {
+        // Chuỗi kết nối tới PostgreSQL trên Azure Cloud
+        // SslMode=Require vì Azure bắt buộc mã hóa kết nối
+        private string _connString =
+            "Host=minhflix-db-24521090.postgres.database.azure.com;" +
+            "Port=5432;" +
+            "Username=minhadmin;" +
+            "Password=Uit2026@Password!;" +
+            "Database=minhflix;" +
+            "SslMode=Require;" +
+            "Trust Server Certificate=true";
+
+        // Giữ tạm _dbPath cho các method chưa migrate
         private string _dbPath = "movies.db";
 
         public DatabaseManager()
