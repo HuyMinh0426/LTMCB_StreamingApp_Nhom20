@@ -28,71 +28,80 @@ namespace ServerApp
 
         private void InitDatabase()
         {
-            using var conn = new SqliteConnection($"Data Source={_dbPath}");
+            using var conn = new NpgsqlConnection(_connString);
             conn.Open();
 
+            // Tạo bảng Users nếu chưa có
+            // SERIAL PRIMARY KEY là kiểu ID tự tăng của PostgreSQL (thay cho AUTOINCREMENT của SQLite)
+            // Bọc "..." vì PostgreSQL phân biệt hoa/thường trong tên bảng và cột
             string createUsers = @"
-                CREATE TABLE IF NOT EXISTS Users (
-                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    Username TEXT NOT NULL UNIQUE,
-                    PasswordHash TEXT NOT NULL,
-                    Salt TEXT NOT NULL,
-                    Status TEXT NOT NULL DEFAULT 'normal',
-                    WarnCount INTEGER NOT NULL DEFAULT 0
+                CREATE TABLE IF NOT EXISTS ""Users"" (
+                    ""Id"" SERIAL PRIMARY KEY,
+                    ""Username"" TEXT NOT NULL UNIQUE,
+                    ""PasswordHash"" TEXT NOT NULL,
+                    ""Salt"" TEXT NOT NULL,
+                    ""Status"" TEXT NOT NULL DEFAULT 'normal',
+                    ""WarnCount"" INTEGER NOT NULL DEFAULT 0
                 );";
-            using (var cmd = new SqliteCommand(createUsers, conn))
+            using (var cmd = new NpgsqlCommand(createUsers, conn))
                 cmd.ExecuteNonQuery();
 
+            // Tạo bảng Movies nếu chưa có
             string createMovies = @"
-                CREATE TABLE IF NOT EXISTS Movies (
-                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    Title TEXT NOT NULL,
-                    FilePath TEXT NOT NULL,
-                    Category TEXT,
-                    Poster TEXT,
-                    Description TEXT,
-                    Duration INTEGER
+                CREATE TABLE IF NOT EXISTS ""Movies"" (
+                    ""Id"" SERIAL PRIMARY KEY,
+                    ""Title"" TEXT NOT NULL,
+                    ""FilePath"" TEXT NOT NULL,
+                    ""Category"" TEXT,
+                    ""Poster"" TEXT,
+                    ""Description"" TEXT,
+                    ""Duration"" INTEGER
                 );";
-            using (var cmd = new SqliteCommand(createMovies, conn))
+            using (var cmd = new NpgsqlCommand(createMovies, conn))
                 cmd.ExecuteNonQuery();
 
+            // Tạo bảng Comments nếu chưa có
             string createComments = @"
-                CREATE TABLE IF NOT EXISTS Comments (
-                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    MovieId INTEGER NOT NULL,
-                    Username TEXT NOT NULL,
-                    Content TEXT NOT NULL,
-                    CreatedAt TEXT NOT NULL
+                CREATE TABLE IF NOT EXISTS ""Comments"" (
+                    ""Id"" SERIAL PRIMARY KEY,
+                    ""MovieId"" INTEGER NOT NULL,
+                    ""Username"" TEXT NOT NULL,
+                    ""Content"" TEXT NOT NULL,
+                    ""CreatedAt"" TEXT NOT NULL
                 );";
-            using (var cmd2 = new SqliteCommand(createComments, conn))
+            using (var cmd2 = new NpgsqlCommand(createComments, conn))
                 cmd2.ExecuteNonQuery();
 
+            // Tạo bảng History nếu chưa có
             string createHistory = @"
-                CREATE TABLE IF NOT EXISTS History (
-                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    Username TEXT NOT NULL,
-                    MovieId INTEGER NOT NULL,
-                    MovieTitle TEXT NOT NULL,
-                    WatchedAt TEXT NOT NULL
+                CREATE TABLE IF NOT EXISTS ""History"" (
+                    ""Id"" SERIAL PRIMARY KEY,
+                    ""Username"" TEXT NOT NULL,
+                    ""MovieId"" INTEGER NOT NULL,
+                    ""MovieTitle"" TEXT NOT NULL,
+                    ""WatchedAt"" TEXT NOT NULL
                 );";
-            using (var cmd3 = new SqliteCommand(createHistory, conn))
+            using (var cmd3 = new NpgsqlCommand(createHistory, conn))
                 cmd3.ExecuteNonQuery();
 
+            // Tạo bảng Reports nếu chưa có
             string createReports = @"
-                CREATE TABLE IF NOT EXISTS Reports (
-                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    Reporter TEXT NOT NULL,
-                    Reported TEXT NOT NULL,
-                    MovieId INTEGER NOT NULL,
-                    MovieTitle TEXT NOT NULL,
-                    CommentContent TEXT NOT NULL,
-                    Reason TEXT NOT NULL,
-                    ReportedAt TEXT NOT NULL
+                CREATE TABLE IF NOT EXISTS ""Reports"" (
+                    ""Id"" SERIAL PRIMARY KEY,
+                    ""Reporter"" TEXT NOT NULL,
+                    ""Reported"" TEXT NOT NULL,
+                    ""MovieId"" INTEGER NOT NULL,
+                    ""MovieTitle"" TEXT NOT NULL,
+                    ""CommentContent"" TEXT NOT NULL,
+                    ""Reason"" TEXT NOT NULL,
+                    ""ReportedAt"" TEXT NOT NULL
                 );";
-            using (var cmd4 = new SqliteCommand(createReports, conn))
+            using (var cmd4 = new NpgsqlCommand(createReports, conn))
                 cmd4.ExecuteNonQuery();
 
-            InsertSampleData(conn);
+            // Data 60 phim đã được migrate sang PostgreSQL từ trước
+            // Vẫn giữ InsertSampleData để phòng khi deploy trên server mới chưa có data
+            //InsertSampleData(conn); bật sau để commit không lỗi
         }
 
         private void InsertSampleData(SqliteConnection conn)
