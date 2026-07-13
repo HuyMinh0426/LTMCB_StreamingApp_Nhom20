@@ -1,5 +1,4 @@
 ﻿using Npgsql;
-using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
 
@@ -18,8 +17,8 @@ namespace ServerApp
             "SslMode=Require;" +
             "Trust Server Certificate=true";
 
-        // Giữ tạm _dbPath cho các method chưa migrate
-        private string _dbPath = "movies.db";
+        
+        
 
         public DatabaseManager()
         {
