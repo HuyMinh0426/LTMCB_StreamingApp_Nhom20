@@ -235,10 +235,10 @@ namespace ServerApp
         {
             try
             {
-                using var conn = new SqliteConnection($"Data Source={_dbPath}");
+                using var conn = new NpgsqlConnection(_connString);
                 conn.Open();
-                string sql = "INSERT INTO Users (Username, PasswordHash, Salt) VALUES (@username, @hash, @salt)";
-                using var cmd = new SqliteCommand(sql, conn);
+                string sql = "INSERT INTO \"Users\" (\"Username\", \"PasswordHash\", \"Salt\") VALUES (@username, @hash, @salt)";
+                using var cmd = new NpgsqlCommand(sql, conn);
                 cmd.Parameters.AddWithValue("@username", username);
                 cmd.Parameters.AddWithValue("@hash", passwordHash);
                 cmd.Parameters.AddWithValue("@salt", salt);
@@ -250,9 +250,9 @@ namespace ServerApp
 
         public (bool success, string salt) GetUserSalt(string username)
         {
-            using var conn = new SqliteConnection($"Data Source={_dbPath}");
+            using var conn = new NpgsqlConnection(_connString);
             conn.Open();
-            using var cmd = new SqliteCommand("SELECT Salt FROM Users WHERE Username = @username", conn);
+            using var cmd = new NpgsqlCommand("SELECT \"Salt\" FROM \"Users\" WHERE \"Username\" = @username", conn);
             cmd.Parameters.AddWithValue("@username", username);
             var result = cmd.ExecuteScalar();
             if (result == null) return (false, "");
@@ -261,10 +261,10 @@ namespace ServerApp
 
         public bool VerifyLogin(string username, string passwordHash)
         {
-            using var conn = new SqliteConnection($"Data Source={_dbPath}");
+            using var conn = new NpgsqlConnection(_connString);
             conn.Open();
-            using var cmd = new SqliteCommand(
-                "SELECT COUNT(*) FROM Users WHERE Username=@u AND PasswordHash=@h", conn);
+            using var cmd = new NpgsqlCommand(
+                "SELECT COUNT(*) FROM \"Users\" WHERE \"Username\"=@u AND \"PasswordHash\"=@h", conn);
             cmd.Parameters.AddWithValue("@u", username);
             cmd.Parameters.AddWithValue("@h", passwordHash);
             long count = (long)cmd.ExecuteScalar();
