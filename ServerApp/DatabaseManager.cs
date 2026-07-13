@@ -273,10 +273,10 @@ namespace ServerApp
 
         public void AddComment(int movieId, string username, string content)
         {
-            using var conn = new SqliteConnection($"Data Source={_dbPath}");
+            using var conn = new NpgsqlConnection(_connString);
             conn.Open();
-            string sql = "INSERT INTO Comments (MovieId, Username, Content, CreatedAt) VALUES (@mid, @user, @content, @time)";
-            using var cmd = new SqliteCommand(sql, conn);
+            string sql = "INSERT INTO \"Comments\" (\"MovieId\", \"Username\", \"Content\", \"CreatedAt\") VALUES (@mid, @user, @content, @time)";
+            using var cmd = new NpgsqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("@mid", movieId);
             cmd.Parameters.AddWithValue("@user", username);
             cmd.Parameters.AddWithValue("@content", content);
@@ -287,10 +287,10 @@ namespace ServerApp
         public List<(string username, string content, string time)> GetComments(int movieId)
         {
             var list = new List<(string, string, string)>();
-            using var conn = new SqliteConnection($"Data Source={_dbPath}");
+            using var conn = new NpgsqlConnection(_connString);
             conn.Open();
-            string sql = "SELECT Username, Content, CreatedAt FROM Comments WHERE MovieId = @mid ORDER BY Id DESC LIMIT 50";
-            using var cmd = new SqliteCommand(sql, conn);
+            string sql = "SELECT \"Username\", \"Content\", \"CreatedAt\" FROM \"Comments\" WHERE \"MovieId\" = @mid ORDER BY \"Id\" DESC LIMIT 50";
+            using var cmd = new NpgsqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("@mid", movieId);
             using var reader = cmd.ExecuteReader();
             while (reader.Read())
@@ -300,10 +300,10 @@ namespace ServerApp
 
         public void AddHistory(string username, int movieId, string movieTitle)
         {
-            using var conn = new SqliteConnection($"Data Source={_dbPath}");
+            using var conn = new NpgsqlConnection(_connString);
             conn.Open();
-            string sql = "INSERT INTO History (Username, MovieId, MovieTitle, WatchedAt) VALUES (@user, @mid, @title, @time)";
-            using var cmd = new SqliteCommand(sql, conn);
+            string sql = "INSERT INTO \"History\" (\"Username\", \"MovieId\", \"MovieTitle\", \"WatchedAt\") VALUES (@user, @mid, @title, @time)";
+            using var cmd = new NpgsqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("@user", username);
             cmd.Parameters.AddWithValue("@mid", movieId);
             cmd.Parameters.AddWithValue("@title", movieTitle);
@@ -314,14 +314,15 @@ namespace ServerApp
         public List<(string title, string watchedAt, int movieId, string category, string poster)> GetHistory(string username)
         {
             var list = new List<(string, string, int, string, string)>();
-            using var conn = new SqliteConnection($"Data Source={_dbPath}");
+            using var conn = new NpgsqlConnection(_connString);
             conn.Open();
-            string sql = @"SELECT h.MovieTitle, h.WatchedAt, h.MovieId, m.Category, m.Poster 
-                           FROM History h 
-                           LEFT JOIN Movies m ON h.MovieId = m.Id
-                           WHERE h.Username=@user 
-                           ORDER BY h.Id DESC LIMIT 20";
-            using var cmd = new SqliteCommand(sql, conn);
+            // JOIN 2 bảng History (h) và Movies (m), mọi tên bảng và cột đều phải bọc ""
+            string sql = @"SELECT h.""MovieTitle"", h.""WatchedAt"", h.""MovieId"", m.""Category"", m.""Poster"" 
+                           FROM ""History"" h 
+                           LEFT JOIN ""Movies"" m ON h.""MovieId"" = m.""Id""
+                           WHERE h.""Username""=@user 
+                           ORDER BY h.""Id"" DESC LIMIT 20";
+            using var cmd = new NpgsqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("@user", username);
             using var reader = cmd.ExecuteReader();
             while (reader.Read())
@@ -337,11 +338,11 @@ namespace ServerApp
 
         public void AddReport(string reporter, string reported, int movieId, string movieTitle, string commentContent, string reason)
         {
-            using var conn = new SqliteConnection($"Data Source={_dbPath}");
+            using var conn = new NpgsqlConnection(_connString);
             conn.Open();
-            string sql = @"INSERT INTO Reports (Reporter, Reported, MovieId, MovieTitle, CommentContent, Reason, ReportedAt)
+            string sql = @"INSERT INTO ""Reports"" (""Reporter"", ""Reported"", ""MovieId"", ""MovieTitle"", ""CommentContent"", ""Reason"", ""ReportedAt"")
                            VALUES (@reporter, @reported, @mid, @title, @content, @reason, @time)";
-            using var cmd = new SqliteCommand(sql, conn);
+            using var cmd = new NpgsqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("@reporter", reporter);
             cmd.Parameters.AddWithValue("@reported", reported);
             cmd.Parameters.AddWithValue("@mid", movieId);
@@ -355,10 +356,10 @@ namespace ServerApp
         public List<(string reporter, string reported, string movieTitle, string commentContent, string reason, string reportedAt)> GetReports()
         {
             var list = new List<(string, string, string, string, string, string)>();
-            using var conn = new SqliteConnection($"Data Source={_dbPath}");
+            using var conn = new NpgsqlConnection(_connString);
             conn.Open();
-            string sql = "SELECT Reporter, Reported, MovieTitle, CommentContent, Reason, ReportedAt FROM Reports ORDER BY Id DESC";
-            using var cmd = new SqliteCommand(sql, conn);
+            string sql = "SELECT \"Reporter\", \"Reported\", \"MovieTitle\", \"CommentContent\", \"Reason\", \"ReportedAt\" FROM \"Reports\" ORDER BY \"Id\" DESC";
+            using var cmd = new NpgsqlCommand(sql, conn);
             using var reader = cmd.ExecuteReader();
             while (reader.Read())
                 list.Add((reader.GetString(0), reader.GetString(1), reader.GetString(2),
@@ -413,10 +414,10 @@ namespace ServerApp
 
         public void DeleteReport(int id)
         {
-            using var conn = new SqliteConnection($"Data Source={_dbPath}");
+            using var conn = new NpgsqlConnection(_connString);
             conn.Open();
-            using var cmd = new SqliteCommand(
-                "DELETE FROM Reports WHERE Id=@id", conn);
+            using var cmd = new NpgsqlCommand(
+                "DELETE FROM \"Reports\" WHERE \"Id\"=@id", conn);
             cmd.Parameters.AddWithValue("@id", id);
             cmd.ExecuteNonQuery();
         }
@@ -424,10 +425,10 @@ namespace ServerApp
         public List<(int id, string reporter, string reported, string movieTitle, string commentContent, string reason, string reportedAt)> GetReportsWithId()
         {
             var list = new List<(int, string, string, string, string, string, string)>();
-            using var conn = new SqliteConnection(  $"Data Source={_dbPath}");
+            using var conn = new NpgsqlConnection(_connString);
             conn.Open();
-            string sql = "SELECT Id, Reporter, Reported, MovieTitle, CommentContent, Reason, ReportedAt FROM Reports ORDER BY Id DESC";
-            using var cmd = new SqliteCommand(sql, conn);
+            string sql = "SELECT \"Id\", \"Reporter\", \"Reported\", \"MovieTitle\", \"CommentContent\", \"Reason\", \"ReportedAt\" FROM \"Reports\" ORDER BY \"Id\" DESC";
+            using var cmd = new NpgsqlCommand(sql, conn);
             using var reader = cmd.ExecuteReader();
             while (reader.Read())
                 list.Add((reader.GetInt32(0), reader.GetString(1), reader.GetString(2),
@@ -436,10 +437,10 @@ namespace ServerApp
         }
         public int GetMovieViewCount(int movieId)
         {
-            using var conn = new SqliteConnection($"Data Source={_dbPath}");
+            using var conn = new NpgsqlConnection(_connString);
             conn.Open();
-            using var cmd = new SqliteCommand(
-                "SELECT COUNT(*) FROM History WHERE MovieId=@mid", conn);
+            using var cmd = new NpgsqlCommand(
+                "SELECT COUNT(*) FROM \"History\" WHERE \"MovieId\"=@mid", conn);
             cmd.Parameters.AddWithValue("@mid", movieId);
             return Convert.ToInt32(cmd.ExecuteScalar());
         }
