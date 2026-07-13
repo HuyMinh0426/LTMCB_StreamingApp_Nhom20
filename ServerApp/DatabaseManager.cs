@@ -367,10 +367,10 @@ namespace ServerApp
         }
         public string GetUserStatus(string username)
         {
-            using var conn = new SqliteConnection($"Data Source={_dbPath}");
+            using var conn = new NpgsqlConnection(_connString);
             conn.Open();
-            using var cmd = new SqliteCommand(
-                "SELECT Status FROM Users WHERE Username=@u", conn);
+            using var cmd = new NpgsqlCommand(
+                "SELECT \"Status\" FROM \"Users\" WHERE \"Username\"=@u", conn);
             cmd.Parameters.AddWithValue("@u", username);
             var result = cmd.ExecuteScalar();
             return result?.ToString() ?? "normal";
@@ -378,20 +378,22 @@ namespace ServerApp
 
         public void SetUserStatus(string username, string status)
         {
-            using var conn = new SqliteConnection($"Data Source={_dbPath}");
+            using var conn = new NpgsqlConnection(_connString);
             conn.Open();
             if (status == "warned")
             {
-                using var cmd = new SqliteCommand(
-                    "UPDATE Users SET Status=@s, WarnCount=WarnCount+1 WHERE Username=@u", conn);
+                // Khi cảnh cáo: đồng thời cập nhật Status và tăng WarnCount lên 1
+                using var cmd = new NpgsqlCommand(
+                    "UPDATE \"Users\" SET \"Status\"=@s, \"WarnCount\"=\"WarnCount\"+1 WHERE \"Username\"=@u", conn);
                 cmd.Parameters.AddWithValue("@s", status);
                 cmd.Parameters.AddWithValue("@u", username);
                 cmd.ExecuteNonQuery();
             }
             else
             {
-                using var cmd = new SqliteCommand(
-                    "UPDATE Users SET Status=@s WHERE Username=@u", conn);
+                // Các trạng thái khác (banned/normal): chỉ cập nhật Status
+                using var cmd = new NpgsqlCommand(
+                    "UPDATE \"Users\" SET \"Status\"=@s WHERE \"Username\"=@u", conn);
                 cmd.Parameters.AddWithValue("@s", status);
                 cmd.Parameters.AddWithValue("@u", username);
                 cmd.ExecuteNonQuery();
@@ -400,10 +402,10 @@ namespace ServerApp
 
         public int GetWarnCount(string username)
         {
-            using var conn = new SqliteConnection($"Data Source={_dbPath}");
+            using var conn = new NpgsqlConnection(_connString);
             conn.Open();
-            using var cmd = new SqliteCommand(
-                "SELECT WarnCount FROM Users WHERE Username=@u", conn);
+            using var cmd = new NpgsqlCommand(
+                "SELECT \"WarnCount\" FROM \"Users\" WHERE \"Username\"=@u", conn);
             cmd.Parameters.AddWithValue("@u", username);
             var result = cmd.ExecuteScalar();
             return result == null ? 0 : Convert.ToInt32(result);
