@@ -195,9 +195,11 @@ namespace ServerApp
         public List<Movie> GetAllMovies()
         {
             var movies = new List<Movie>();
-            using var conn = new SqliteConnection($"Data Source={_dbPath}");
+            using var conn = new NpgsqlConnection(_connString);
             conn.Open();
-            using var cmd = new SqliteCommand("SELECT * FROM Movies", conn);
+            // PostgreSQL không đảm bảo thứ tự trả về nếu thiếu ORDER BY
+            // nên phải thêm ORDER BY "Id" để danh sách phim luôn ổn định
+            using var cmd = new NpgsqlCommand("SELECT * FROM \"Movies\" ORDER BY \"Id\"", conn);
             using var reader = cmd.ExecuteReader();
             while (reader.Read())
                 movies.Add(ReadMovie(reader));
@@ -206,16 +208,16 @@ namespace ServerApp
 
         public Movie? GetMovieById(int id)
         {
-            using var conn = new SqliteConnection($"Data Source={_dbPath}");
+            using var conn = new NpgsqlConnection(_connString);
             conn.Open();
-            using var cmd = new SqliteCommand("SELECT * FROM Movies WHERE Id = @id", conn);
+            using var cmd = new NpgsqlCommand("SELECT * FROM \"Movies\" WHERE \"Id\" = @id", conn);
             cmd.Parameters.AddWithValue("@id", id);
             using var reader = cmd.ExecuteReader();
             if (reader.Read()) return ReadMovie(reader);
             return null;
         }
 
-        private Movie ReadMovie(SqliteDataReader reader)
+        private Movie ReadMovie(NpgsqlDataReader reader)
         {
             return new Movie
             {
