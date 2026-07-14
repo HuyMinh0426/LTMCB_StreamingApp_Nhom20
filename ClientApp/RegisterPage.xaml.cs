@@ -11,7 +11,7 @@ namespace ClientApp
 {
     public partial class RegisterPage : Page
     {
-        private string _ip;
+        
 
         public RegisterPage()
         {
@@ -42,7 +42,7 @@ namespace ClientApp
 
             try
             {
-                using var client = new TcpClient(_ip, 8888);
+                using var client = new TcpClient(ServerConfig.Host, ServerConfig.TcpPort);
                 using var stream = client.GetStream();
 
                 string salt = GenerateSalt();

@@ -41,4 +41,5 @@ Desktop.ini
 .idea/
 
 # VS Code
-.vscode/
+.vscode/publish/
+*.zip
