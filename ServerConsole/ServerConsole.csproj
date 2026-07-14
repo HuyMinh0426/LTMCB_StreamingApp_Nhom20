@@ -7,4 +7,13 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Include="..\ServerApp\CryptoHelper.cs" Link="CryptoHelper.cs" />
+    <Compile Include="..\ServerApp\DatabaseManager.cs" Link="DatabaseManager.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Npgsql" Version="10.0.3" />
+  </ItemGroup>
+
 </Project>
