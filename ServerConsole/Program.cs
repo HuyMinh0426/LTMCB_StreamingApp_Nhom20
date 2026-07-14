@@ -33,6 +33,9 @@ namespace ServerConsole
 
         static void Main(string[] args)
         {
+            
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+
             Log("======================================");
             Log("  MINHFLIX Streaming Server - v2.0");
             Log("  Deployed on Cloud VM");

@@ -16,4 +16,14 @@
     <PackageReference Include="Npgsql" Version="10.0.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="videos\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="videos\bunny.mp4">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
