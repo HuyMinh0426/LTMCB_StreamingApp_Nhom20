@@ -13,10 +13,9 @@ namespace ClientApp
     {
         private string _ip;
 
-        public RegisterPage(string ip)
+        public RegisterPage()
         {
             InitializeComponent();
-            _ip = ip;
         }
 
         private void btnRegister_Click(object sender, RoutedEventArgs e)

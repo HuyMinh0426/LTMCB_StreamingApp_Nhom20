@@ -23,12 +23,12 @@ namespace ClientApp
 
         private void GoRegister_Click(object sender, MouseButtonEventArgs e)
         {
-            NavigationService.Navigate(new RegisterPage(txtIP.Text.Trim()));
+            NavigationService.Navigate(new RegisterPage());
         }
 
         private async void btnLogin_Click(object sender, RoutedEventArgs e)
         {
-            string ip = txtIP.Text.Trim();
+            
             string username = txtUsername.Text.Trim();
             string password = txtPassword.Password;
 
@@ -50,7 +50,7 @@ namespace ClientApp
                 // Đẩy phần kết nối + chờ phản hồi sang luồng nền để spinner xoay mượt
                 await System.Threading.Tasks.Task.Run(() =>
                 {
-                    KetNoi(ip);
+                    KetNoi();
                     string enc = "ENC|" + CryptoHelper.Encrypt($"GET_SALT|{username}");
                     byte[] data = Encoding.UTF8.GetBytes(enc + "\n");
                     _stream.Write(data, 0, data.Length);
@@ -76,10 +76,10 @@ namespace ClientApp
                 btnLogin_Click(null, null);
         }
 
-        private void KetNoi(string ip)
+        private void KetNoi()
         {
             if (_client != null && _client.Connected) return;
-            _client = new TcpClient(ip, 8888);
+            _client = new TcpClient(ServerConfig.Host, ServerConfig.TcpPort);
             _stream = _client.GetStream();
         }
 
